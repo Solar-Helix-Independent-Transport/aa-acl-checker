@@ -44,7 +44,7 @@ Finally, restart your AA server.
 ## Installing Into Production AA
 
 ```bash
-pip install git+https://github.com/aaronkable/aa-acl-checker
+pip install git+https://github.com/Solar-Helix-Independent-Transport/aa-acl-checker
 ```
 
 Then add `acl_checker` to `INSTALLED_APPS` in `settings/local.py`, run migrations and

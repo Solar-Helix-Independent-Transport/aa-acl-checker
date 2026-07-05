@@ -43,8 +43,8 @@ dependencies = [
     "django-esi>=9",
     "django-solo",
 ]
-urls.Changelog = "https://github.com/aaronkable/aa-acl-checker/blob/master/CHANGELOG.md"
-urls.Tracker = "https://github.com/aaronkable/aa-acl-checker/issues"
+urls.Changelog = "https://github.com/Solar-Helix-Independent-Transport/aa-acl-checker/blob/master/CHANGELOG.md"
+urls.Tracker = "https://github.com/Solar-Helix-Independent-Transport/aa-acl-checker/issues"
 
 [tool.hatch]
 version.path = "acl_checker/__init__.py"
