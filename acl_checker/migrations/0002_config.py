@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("acl_checker", "0001_initial"),
-        ("authentication", "0026_alter_characterownership_user_and_more"),
+        ("authentication", "0025_v5squash"),
     ]
 
     operations = [
