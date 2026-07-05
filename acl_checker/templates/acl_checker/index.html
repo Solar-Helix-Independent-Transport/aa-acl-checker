@@ -1,0 +1,146 @@
+{% extends 'acl_checker/base.html' %}
+
+{% load i18n %}
+{% load aa_i18n %}
+
+{% block page_title %}
+    {% translate "ACL Checker" %}
+{% endblock page_title %}
+
+{% block header_nav_brand %}
+    {% translate "ACL Checker" %}
+{% endblock header_nav_brand %}
+
+{% block header_nav_collapse_right %}
+    {% if perms.acl_checker.add_owner %}
+        {% translate "Add / Refresh Character" as nav_item_title %}
+        {% url "acl_checker:add_owner" as nav_item_link %}
+        {% include "framework/header/nav-collapse-button.html" with btn_modifier="success" url=nav_item_link title=nav_item_title fa_icon="fa-solid fa-arrows-rotate" icon_on_mobile=True %}
+    {% endif %}
+{% endblock header_nav_collapse_right %}
+
+{% block details %}
+    {% if not can_view_flagged %}
+        <p class="mb-0">
+            {% translate "You can link a character's Access Lists for tracking, but you don't have permission to view Access Lists or flagged characters." %}
+        </p>
+    {% else %}
+        <h5>{% translate "Access Lists" %}</h5>
+
+        {% if not acl_rows %}
+            <p>
+                {% translate "No Access Lists are being tracked yet." %}
+                {% if perms.acl_checker.add_owner %}
+                    {% translate "Use the Add / Refresh Character button above to link a manager character's Access Lists." %}
+                {% endif %}
+            </p>
+        {% else %}
+            <div class="table-responsive mb-4">
+                <table class="table table-hover" id="aclTable">
+                    <thead>
+                        <tr>
+                            <th>{% translate "Name" %}</th>
+                            <th>{% translate "Allow Everyone" %}</th>
+                            <th>{% translate "Characters" %}</th>
+                            <th>{% translate "Corporations" %}</th>
+                            <th>{% translate "Alliances" %}</th>
+                            <th>{% translate "Flagged" %}</th>
+                            <th>{% translate "Last Synced" %}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in acl_rows %}
+                            <tr>
+                                <td>{{ row.acl.name }}</td>
+                                <td>
+                                    {% if row.acl.allow_everyone %}
+                                        <i class="fas fa-check text-success" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="fas fa-xmark text-body-secondary" aria-hidden="true"></i>
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.character_count }}</td>
+                                <td>{{ row.corporation_count }}</td>
+                                <td>{{ row.alliance_count }}</td>
+                                <td>
+                                    {% if row.flagged_count %}
+                                        <span class="badge text-bg-danger">{{ row.flagged_count }}</span>
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.acl.last_synced_at|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        <h5>{% translate "Flagged Characters" %}</h5>
+
+        {% if not rows %}
+            <p class="mb-0">
+                {% translate "No flagged characters found. Everyone granted access on a tracked ACL is registered in Auth." %}
+            </p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="flaggedTable">
+                    <thead>
+                        <tr>
+                            <th>{% translate "Access List" %}</th>
+                            <th>{% translate "Character" %}</th>
+                            <th>{% translate "Access" %}</th>
+                            <th>{% translate "Reason" %}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in rows %}
+                            <tr>
+                                <td>{{ row.acl.name }}</td>
+                                <td>{{ row.character_name|default:row.character_id }}</td>
+                                <td>{{ row.access }}</td>
+                                <td>{{ row.reason }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock details %}
+
+{% block extra_css %}
+    {% include 'bundles/datatables-2-css-bs5.html' %}
+    {% include 'bundles/datatables-2-responsive-css.html' %}
+{% endblock %}
+
+{% block extra_javascript %}
+    {% include 'bundles/datatables-2-js-bs5.html' %}
+    {% include 'bundles/datatables-2-responsive-js.html' %}
+
+    {% get_datatables_language_static LANGUAGE_CODE as DT_LANG_PATH %}
+
+    <script>
+        $(document).ready(() => {
+            /* global DataTable */
+            'use strict';
+
+            if (document.getElementById('aclTable')) {
+                new DataTable('#aclTable', {
+                    language: {url: '{{ DT_LANG_PATH }}'},
+                    responsive: true,
+                });
+            }
+
+            if (document.getElementById('flaggedTable')) {
+                new DataTable('#flaggedTable', {
+                    language: {url: '{{ DT_LANG_PATH }}'},
+                    responsive: true,
+                });
+            }
+        });
+    </script>
+{% endblock %}
