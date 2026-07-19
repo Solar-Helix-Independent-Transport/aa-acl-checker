@@ -15,7 +15,7 @@ database, and flags characters that appear on an ACL but are not registered in A
 
 ______________________________________________________________________
 
-![Access Lists and Flagged Characters](imgs/ACLs.png)
+![Access Lists and Flagged Characters](https://raw.githubusercontent.com/Solar-Helix-Independent-Transport/aa-acl-checker/refs/heads/main/imgs/ACLs.png "Access Lists and Flagged Characters")
 
 ## Features
 
