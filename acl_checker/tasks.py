@@ -93,15 +93,13 @@ def sync_owner_acls(owner_pk: int, force: bool = False) -> None:
         logger.warning("No valid Access List token found for %s", owner.character)
         return
 
-    try:
-        listing = esi.client.Access_List.GetCharactersAccessListsListing(
-            character_id=character_id, token=token
-        ).result(force_refresh=force)
-    except HTTPNotModified:
-        logger.debug("Access List listing unchanged for %s", owner.character)
-        owner.last_synced_at = timezone.now()
-        owner.save(update_fields=["last_synced_at"])
-        return
+    # The listing's ETag only reflects *which* Access Lists this character
+    # manages, not their membership - an in-game membership change never
+    # changes it. Always bypass its cache so a 304 there can never skip the
+    # per-ACL detail sync below (which has its own, membership-aware ETag).
+    listing = esi.client.Access_List.GetCharactersAccessListsListing(
+        character_id=character_id, token=token
+    ).result(force_refresh=True)
 
     for access_list in listing.access_lists:
         _sync_acl(access_list.id, token, force=force)
